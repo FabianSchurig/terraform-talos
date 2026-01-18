@@ -102,9 +102,11 @@ resource "proxmox_virtual_environment_vm" "worker" {
     sockets      = 1
     numa         = true
     type         = "host"
+    flags        = ["+pdpe1gb"]
   }
   memory {
     dedicated = each.value.mem
+    floating  = 0
     # hugepages      = "1024"
     # keep_hugepages = true
   }

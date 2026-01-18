@@ -220,19 +220,35 @@ resource "local_sensitive_file" "controlplane" {
   file_permission = "0600"
 }
 
-resource "local_sensitive_file" "csi" {
+resource "local_sensitive_file" "ccm" {
   content = yamlencode({
     "config" : {
       "clusters" : [{
         "url" : "https://${var.proxmox_host}:8006/api2/json",
         "insecure" : true,
         "token_id" : local.proxmox_token_ccm_id,
+        "token_secret" : local.proxmox_token_ccm,
+        "region" : var.region,
+      }]
+    }
+  })
+  filename        = "vars/secrets.proxmox-ccm.yaml"
+  file_permission = "0600"
+}
+
+resource "local_sensitive_file" "csi" {
+  content = yamlencode({
+    "config" : {
+      "clusters" : [{
+        "url" : "https://${var.proxmox_host}:8006/api2/json",
+        "insecure" : true,
+        "token_id" : local.proxmox_token_csi_id,
         "token_secret" : local.proxmox_token_csi,
         "region" : var.region,
       }]
     }
   })
-  filename        = "vars/secrets.proxmox.yaml"
+  filename        = "vars/secrets.proxmox-csi.yaml"
   file_permission = "0600"
 }
 

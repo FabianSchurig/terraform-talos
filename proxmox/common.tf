@@ -38,6 +38,7 @@ module "template" {
   node               = each.key
   template_id        = each.value + 1000
   template_datastore = "system"
+  template_hugepages = "1024"
 
   template_network_dns = ["1.1.1.1", "2001:4860:4860::8888"]
   template_network = {
