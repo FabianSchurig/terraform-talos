@@ -1,15 +1,25 @@
 
-output "ccm" {
+output "ccm_id" {
+  value = module.roles.ccm_token_id
+}
+output "ccm_token" {
   sensitive = true
-  value     = proxmox_virtual_environment_user_token.ccm.value
+  value     = module.roles.ccm_token_secret
 }
 
-output "csi" {
+output "csi_id" {
+  value = module.roles.csi_token_id
+}
+output "csi_token" {
   sensitive = true
-  value     = proxmox_virtual_environment_user_token.csi.value
+  value     = module.roles.csi_token_secret
 }
 
-output "karpenter" {
+output "karpenter_id" {
+  value = module.roles.karpenter_token_id
+}
+
+output "karpenter_token" {
   sensitive = true
-  value     = proxmox_virtual_environment_user_token.karpenter.value
+  value     = module.roles.karpenter_token_secret
 }

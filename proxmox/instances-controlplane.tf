@@ -209,8 +209,8 @@ resource "local_sensitive_file" "controlplane" {
         "clusters" : [{
           "url" : "https://${each.value.hvv4}:8006/api2/json",
           "insecure" : true,
-          "token_id" : split("=", local.proxmox_token_ccm)[0],
-          "token_secret" : split("=", local.proxmox_token_ccm)[1],
+          "token_id" : local.proxmox_token_ccm_id,
+          "token_secret" : local.proxmox_token_ccm,
           "region" : var.region,
         }]
       })
@@ -226,8 +226,8 @@ resource "local_sensitive_file" "csi" {
       "clusters" : [{
         "url" : "https://${var.proxmox_host}:8006/api2/json",
         "insecure" : true,
-        "token_id" : split("=", local.proxmox_token_csi)[0],
-        "token_secret" : split("=", local.proxmox_token_csi)[1],
+        "token_id" : local.proxmox_token_ccm_id,
+        "token_secret" : local.proxmox_token_csi,
         "region" : var.region,
       }]
     }
