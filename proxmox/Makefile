@@ -1,14 +1,23 @@
 
-CLUSTERNAME:="talos-k8s-proxmox"
+CLUSTERNAME := talos-k8s-proxmox
+CLUSTERAPI := api.cluster.local
+
+########################################################
+
 CPFIRST := ${shell terraform output -raw controlplane_firstnode 2>/dev/null}
 ENDPOINT := ${shell terraform output -raw controlplane_endpoint 2>/dev/null}
+ifneq (,$(findstring Warning,${ENDPOINT}))
+ENDPOINT = $(CLUSTERAPI)
+endif
 ifeq ($(ENDPOINT),)
-ENDPOINT := api.cluster.local
-else ifneq (,$(findstring Warning,${ENDPOINT}))
-ENDPOINT := api.cluster.local
+ENDPOINT = $(CLUSTERAPI)
 endif
 
+########################################################
+
 SOPS_AGE_KEY_FILE ?= age.key.txt
+
+########################################################
 
 help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[0-9a-zA-Z_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -26,13 +35,13 @@ create-age: ## Create age key
 
 create-config: clean ## Generate talos configs
 	terraform apply -auto-approve -target=local_file.worker_patch
-	talosctl gen config --output-dir _cfgs --with-docs=false --with-examples=false --config-patch-control-plane=@templates/controlplane.patch ${CLUSTERNAME} https://${ENDPOINT}:6443
+	talosctl gen config --output-dir _cfgs --with-docs=false --with-examples=false --config-patch-control-plane=@templates/controlplane.patch --config-patch-worker=@templates/worker.patch ${CLUSTERNAME} https://${ENDPOINT}:6443
 	talosctl --talosconfig _cfgs/talosconfig config endpoint ${ENDPOINT}
 
 create-templates:
 	@echo 'podSubnets: "10.32.0.0/12,fd00:10:32::/64"'         >  _cfgs/tfstate.vars
 	@echo 'serviceSubnets: "10.200.0.0/22,fd40:10:200::/108"'  >> _cfgs/tfstate.vars
-	@echo 'apiDomain: api.cluster.local'                       >> _cfgs/tfstate.vars
+	@echo 'apiDomain: ${CLUSTERAPI}'                           >> _cfgs/tfstate.vars
 	@yq eval 'select(documentIndex == 0)' _cfgs/controlplane.yaml > _cfgs/controlplane.yaml.first
 	@yq eval '.cluster.network.dnsDomain' _cfgs/controlplane.yaml.first | awk '{ print "domain: "$$1}'       >> _cfgs/tfstate.vars
 	@yq eval '.cluster.clusterName' _cfgs/controlplane.yaml.first       | awk '{ print "clusterName: "$$1}'  >> _cfgs/tfstate.vars
@@ -54,6 +63,7 @@ create-templates:
 create-cluster: ## Create cluster
 	terraform apply
 
+.PHONY: bootstrap
 bootstrap: ## Bootstrap controlplane
 	talosctl --talosconfig _cfgs/talosconfig config endpoint ${ENDPOINT}
 	talosctl --talosconfig _cfgs/talosconfig --nodes ${CPFIRST} bootstrap
@@ -78,7 +88,7 @@ helm-install-deps:
 	helm plugin list | grep -q secrets || helm plugin install https://github.com/jkroepke/helm-secrets
 
 system:
-	helm --kubeconfig=kubeconfig upgrade -i --namespace=kube-system --version=1.18.5 -f deployments/cilium.yaml \
+	helm --kubeconfig=kubeconfig upgrade -i --namespace=kube-system --version=1.18.6 -f deployments/cilium.yaml \
 		cilium cilium/cilium
 
 	kubectl --kubeconfig=kubeconfig apply -f ../_deployments/vars/coredns-local.yaml

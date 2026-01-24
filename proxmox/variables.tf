@@ -138,8 +138,8 @@ variable "security_groups" {
   type        = map(any)
   default = {
     # "controlplane" = "kubernetes"
-    # "web"          = "kubernetes"
-    # "worker"       = "kubernetes"
-    # "db"           = "kubernetes"
+    # "web"    = "kubernetes"
+    # "worker" = "kubernetes"
+    # "db"     = "kubernetes"
   }
 }

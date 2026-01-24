@@ -11,10 +11,8 @@ machine:
     defaultRuntimeSeccompProfileEnabled: true
     extraArgs:
       cloud-provider: external
-      rotate-server-certificates: true
-      node-labels: ${labels}
-      register-with-taints: "karpenter.sh/unregistered=:NoExecute"
     extraConfig:
+      serverTLSBootstrap: true
       imageGCHighThresholdPercent: 70
       imageGCLowThresholdPercent: 50
       shutdownGracePeriod: 60s

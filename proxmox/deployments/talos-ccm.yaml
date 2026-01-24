@@ -68,13 +68,13 @@ transformations:
     labels:
       node-role.kubernetes.io/default: ""
 
-  - name: nocloud
-    nodeSelector:
-      - matchExpressions:
-          - key: platform
-            operator: In
-            values:
-              - nocloud
-    platformMetadata:
-      InstanceType: "{{ coalesce .InstanceType .SKUNumber }}"
-      ProviderID: '{{ if .SerialNumber }}proxmox://region-1/{{ getValue .SerialNumber "i" }}{{ else }}{{ .ProviderID }}{{ end }}'
+  # - name: nocloud
+  #   nodeSelector:
+  #     - matchExpressions:
+  #         - key: platform
+  #           operator: In
+  #           values:
+  #             - nocloud
+  #   platformMetadata:
+  #     InstanceType: "{{ coalesce .InstanceType .SKUNumber }}"
+  #     ProviderID: '{{ if .SerialNumber }}proxmox://region-1/{{ getValue .SerialNumber "i" }}{{ else }}{{ .ProviderID }}{{ end }}'
