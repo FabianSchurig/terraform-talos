@@ -39,6 +39,7 @@ module "template" {
 
   talos_version      = "v${var.release}"
   talos_factory_hash = "14e9b0100f05654bedf19b92313cdc224cbff52879193d24f3741f1da4a3cbb1"
+  talos_secureboot   = false
 
   template_id        = each.value + 1000
   template_datastore = "system"
