@@ -88,7 +88,7 @@ variable "instances" {
   type        = map(any)
   default = {
     "all" = {
-      version = "v1.35.0"
+      version = "v1.35.1"
     },
     "hvm-1" = {
       enabled         = false,

@@ -88,7 +88,7 @@ helm-install-deps:
 	helm plugin list | grep -q secrets || helm plugin install https://github.com/jkroepke/helm-secrets
 
 system:
-	helm --kubeconfig=kubeconfig upgrade -i --namespace=kube-system --version=1.18.6 -f deployments/cilium.yaml \
+	helm --kubeconfig=kubeconfig upgrade -i --namespace=kube-system --version=1.18.7 -f deployments/cilium.yaml \
 		cilium cilium/cilium
 
 	kubectl --kubeconfig=kubeconfig apply -f ../_deployments/vars/coredns-local.yaml
